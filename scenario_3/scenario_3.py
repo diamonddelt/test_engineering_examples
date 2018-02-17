@@ -44,4 +44,8 @@ def obtain_country_list_using_specific_currency(currency_shortcode):
     print(usd_country_list)
     return usd_country_list
 
+def obtain_name_and_capital_of_all_countries():
+    print('hello')
+
 obtain_country_list_using_specific_currency('USD')
+obtain_name_and_capital_of_all_countries()
