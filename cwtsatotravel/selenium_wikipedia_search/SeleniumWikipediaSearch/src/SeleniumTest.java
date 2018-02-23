@@ -1,37 +1,33 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.junit.*; // add JUnit test cases if time permits
+import pages.WikipediaContentPage;
+import pages.WikipediaHomePage;
+import pages.WikipediaSearchResultsPage;
 
 /*
     Author: Ryan Rasti
-    Notes: Refactor this into a page object if time permits
+    Notes: Currently refactoring to POP
  */
 public class SeleniumTest {
     public static void main(String[] args) {
         ChromeDriver driver = new ChromeDriver();
-        driver.get("http://www.wikipedia.org");
-        WebElement searchBox = driver.findElement(By.id("searchInput"));
-        String searchText = "Selenium Software";
-
-        // I know the best thing to test would be selecting from the dropdown; this will have to do for now
-        searchBox.sendKeys(searchText);
-        searchBox.sendKeys(Keys.ENTER);
-
-        WebElement searchResults = driver.findElement(By.id("mw-content-text"));
-        searchResults.findElement(By.xpath("//a[@title='Selenium (software)']")).click();
-
-        WebElement seleniumImage = driver.findElement((By.xpath("//img[@alt='Seleniumlogo.png']")));
-        seleniumImage.click();
-
-        // wait until the "close" is present to ensure the overlay is displayed
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@original-title='Close this tool (Esc)']")));
 
-        driver.findElement(By.xpath("//button[@original-title='Close this tool (Esc)']")).click();
+        WikipediaHomePage wikipediaHomePage = new WikipediaHomePage(driver);
+        wikipediaHomePage.open("http://www.wikipedia.org");
+        wikipediaHomePage.useSearchBox("Selenium Software");
+
+        WikipediaSearchResultsPage wikipediaSearchResultsPage = new WikipediaSearchResultsPage(driver);
+        wikipediaSearchResultsPage.clickSearchResultByLinkText("Selenium (software)");
+
+        WikipediaContentPage wikipediaContentPage = new WikipediaContentPage(driver, wait);
+        wikipediaContentPage.clickContentPageImageByAltText("Seleniumlogo.png");
+        wikipediaContentPage.closeContentPageImageOverlay();
+
+        /* ABOVE: Refactoring to use PageObject Pattern */
 
         // hide/show contents of page
         WebElement contentToggleLink = driver.findElement(By.id("toc")).findElement(By.className("togglelink"));
