@@ -4,10 +4,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.junit.*; // add JUnit test cases if time permits
 
 /*
     Author: Ryan Rasti
-    Notes: Refactor this into a page object when time permits
+    Notes: Refactor this into a page object if time permits
  */
 public class SeleniumTest {
     public static void main(String[] args) {
@@ -42,6 +43,25 @@ public class SeleniumTest {
         // contentToggleLink.click();
         // wait.until(ExpectedConditions.textToBe(By.xpath("//a[@class='togglelink']"), "hide")); // verify that this shows it
 
+        // refactor this block to a separate 'verify' method
+        WebElement contentsBox = driver.findElement(By.id("toc"));
+        try
+        {
+            contentsBox.findElement(By.xpath("//a[@href='#History']"));
+            contentsBox.findElement(By.xpath("//a[@href='#Selenium_IDE']"));
+            contentsBox.findElement(By.xpath("//a[@href='#References']"));
+        }
+        catch (Exception e) {
+            System.out.println("One of the anchor links in the Table of Contents is not present!");
+            // e.printStackTrace();
+        }
 
+        driver.findElement(By.linkText("open-source software")).click();
+        wait.until(ExpectedConditions.textToBe(By.id("firstHeading"), "Open-source software"));
+
+        String pageTitleMessage = "The title of the current page is: " + driver.findElement(By.id("firstHeading")).getText();
+        System.out.println(pageTitleMessage);
+
+        driver.quit();
     }
 }
