@@ -1,5 +1,4 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,7 +8,6 @@ import pages.WikipediaSearchResultsPage;
 
 /*
     Author: Ryan Rasti
-    Notes: Currently refactoring to POP
  */
 public class SeleniumTest {
     public static void main(String[] args) {
@@ -27,36 +25,21 @@ public class SeleniumTest {
         wikipediaContentPage.clickContentPageImageByAltText("Seleniumlogo.png");
         wikipediaContentPage.closeContentPageImageOverlay();
 
-        /* ABOVE: Refactoring to use PageObject Pattern */
+        // FIXME: There are intermittent failures after this point ... probably timing related
+        // Reproducibility: 2/5 of my attempts
+        // Need to diagnose
 
-        // hide/show contents of page
-        WebElement contentToggleLink = driver.findElement(By.id("toc")).findElement(By.className("togglelink"));
+        wikipediaContentPage.toggleTableOfContents(true); // hides
+        wikipediaContentPage.toggleTableOfContents(false); // shows
 
-        contentToggleLink.click();
-        wait.until(ExpectedConditions.textToBe(By.xpath("//a[@class='togglelink']"), "show")); // verify that this hides it
+        wikipediaContentPage.verifyTableOfContentsContainsLinkByLinkText("History");
+        wikipediaContentPage.verifyTableOfContentsContainsLinkByLinkText("Selenium_IDE");
+        wikipediaContentPage.verifyTableOfContentsContainsLinkByLinkText("References");
 
-        driver.findElement(By.xpath("//a[@class='togglelink']")).click();
-        // contentToggleLink.click();
-        // wait.until(ExpectedConditions.textToBe(By.xpath("//a[@class='togglelink']"), "hide")); // verify that this shows it
-
-        // refactor this block to a separate 'verify' method
-        WebElement contentsBox = driver.findElement(By.id("toc"));
-        try
-        {
-            contentsBox.findElement(By.xpath("//a[@href='#History']"));
-            contentsBox.findElement(By.xpath("//a[@href='#Selenium_IDE']"));
-            contentsBox.findElement(By.xpath("//a[@href='#References']"));
-        }
-        catch (Exception e) {
-            System.out.println("One of the anchor links in the Table of Contents is not present!");
-            // e.printStackTrace();
-        }
-
-        driver.findElement(By.linkText("open-source software")).click();
+        wikipediaContentPage.clickContextualLinkByLinkText("open-source software");
         wait.until(ExpectedConditions.textToBe(By.id("firstHeading"), "Open-source software"));
 
-        String pageTitleMessage = "The title of the current page is: " + driver.findElement(By.id("firstHeading")).getText();
-        System.out.println(pageTitleMessage);
+        System.out.println("The title of the current page is: " + wikipediaContentPage.getContentPageTitle());
 
         driver.quit();
     }
